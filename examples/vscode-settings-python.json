@@ -1,0 +1,21 @@
+{
+  "mcp.servers": {
+    "azure-devops": {
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_ado_server.main"
+      ],
+      "cwd": "d:\\projects\\training\\vibe\\mcp-ado",
+      "env": {
+        "AZURE_DEVOPS_ORGANIZATION": "CINECA-DataPlatform",
+        "AZURE_DEVOPS_PAT": "your-personal-access-token-here",
+        "LOG_LEVEL": "INFO"
+      },
+      "initializationOptions": {
+        "timeout": 30000,
+        "retries": 3
+      }
+    }
+  }
+}

@@ -73,7 +73,133 @@ LOG_FORMAT=json
 
 ## Usage
 
-### Running the Server
+### VS Code Configuration (MCP Integration)
+
+To use this MCP server with VS Code and GitHub Copilot, follow these steps:
+
+#### 1. Install VS Code Extension
+
+Install the **MCP Client** extension from the VS Code marketplace or use the integrated MCP support in GitHub Copilot.
+
+#### 2. Configure MCP Settings
+
+Add the following configuration to your VS Code `settings.json`:
+
+```json
+{
+  "mcp.servers": {
+    "azure-devops": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "d:\\projects\\training\\vibe\\mcp-ado",
+        "mcp-ado-server"
+      ],
+      "env": {
+        "AZURE_DEVOPS_ORGANIZATION": "your-organization",
+        "AZURE_DEVOPS_PAT": "your-personal-access-token",
+        "LOG_LEVEL": "INFO"
+      },
+      "initializationOptions": {
+        "timeout": 30000,
+        "retries": 3
+      }
+    }
+  }
+}
+```
+
+> **📁 Quick Start**: Copy the complete configuration from [`examples/vscode-settings.json`](examples/vscode-settings.json)
+
+#### 3. Alternative: Using Python Directly
+
+If you prefer not to use `uv`, configure with Python directly:
+
+```json
+{
+  "mcp.servers": {
+    "azure-devops": {
+      "command": "python",
+      "args": [
+        "-m",
+        "mcp_ado_server.main"
+      ],
+      "cwd": "d:\\projects\\training\\vibe\\mcp-ado",
+      "env": {
+        "AZURE_DEVOPS_ORGANIZATION": "your-organization",
+        "AZURE_DEVOPS_PAT": "your-personal-access-token"
+      }
+    }
+  }
+}
+```
+
+#### 4. Environment Variables Setup
+
+Create a `.env` file in the project root or use VS Code's environment configuration:
+
+```bash
+# Azure DevOps Configuration
+AZURE_DEVOPS_ORGANIZATION=your-organization
+AZURE_DEVOPS_PAT=your-personal-access-token
+
+# Optional: Advanced Configuration
+AZURE_DEVOPS_API_VERSION=7.0
+LOG_LEVEL=INFO
+LOG_FORMAT=json
+HTTP_TIMEOUT=30
+MAX_RETRIES=3
+```
+
+#### 5. Verify MCP Connection
+
+1. Restart VS Code after configuration
+2. Open the Command Palette (`Ctrl+Shift+P`)
+3. Run `MCP: Show Connected Servers`
+4. Verify that `azure-devops` appears in the list
+5. Check the Output panel for any connection errors
+
+#### 6. Using MCP Tools in Copilot
+
+Once configured, you can use the tools in GitHub Copilot chats:
+
+```
+@copilot List all variable groups in the MyProject project
+
+@copilot Show me service connections for the DevOps-Project, filtering by Azure type
+
+@copilot What variable groups exist in project "Infrastructure" with name containing "prod"?
+```
+
+#### 7. Troubleshooting
+
+**Common Issues:**
+
+- **Authentication Errors**: Verify your PAT has correct permissions
+- **Connection Timeout**: Increase timeout in `initializationOptions`
+- **Command Not Found**: Ensure `uv` is in your PATH or use absolute path
+- **Permission Denied**: Check Azure DevOps project permissions
+
+**Debug Mode:**
+
+Enable debug logging by setting:
+
+```json
+{
+  "mcp.servers": {
+    "azure-devops": {
+      "env": {
+        "LOG_LEVEL": "DEBUG"
+      }
+    }
+  }
+}
+```
+
+### Running the Server Standalone
+
+For testing or standalone usage:
 
 ```bash
 # Start the MCP server
@@ -180,6 +306,12 @@ pre-commit run --all-files
 - Implement proper input validation
 - Log all operations for audit purposes
 - Respect Azure DevOps API rate limits
+
+## Documentation
+
+- **[VS Code Setup Guide](docs/VSCODE_SETUP.md)**: Complete guide for configuring MCP in VS Code
+- **[API Documentation](docs/API.md)**: Detailed API reference
+- **[Architecture Overview](docs/ARCHITECTURE.md)**: System design and architecture decisions
 
 ## API Documentation
 
