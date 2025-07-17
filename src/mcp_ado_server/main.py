@@ -2,15 +2,13 @@
 Main entry point for the MCP Azure DevOps Server.
 """
 
-import asyncio
 import logging
 import sys
 from typing import Optional
 
 import click
 
-from .config import Config
-from .server import MCPAzureDevOpsServer
+from .fastmcp_server import run_server
 
 
 def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
@@ -58,38 +56,23 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
 def main(config: Optional[str] = None, log_level: str = "INFO", log_format: str = "json") -> None:
     """MCP Azure DevOps Server - A Model Context Protocol server for Azure DevOps."""
     try:
-        # Load configuration
-        if config:
-            # TODO: Implement config file loading
-            raise NotImplementedError("Config file loading not yet implemented")
-        else:
-            server_config = Config.from_env()
-            server_config.validate()
-
-        # Override logging settings if provided
-        if log_level:
-            server_config.log_level = log_level
-        if log_format:
-            server_config.log_format = log_format
-
         # Setup logging
-        setup_logging(server_config.log_level, server_config.log_format)
+        setup_logging(log_level, log_format)
 
         logger = logging.getLogger(__name__)
         logger.info("Starting MCP Azure DevOps Server")
-        logger.info(f"Organization: {server_config.organization}")
-        logger.info(f"API Version: {server_config.api_version}")
-        logger.info(f"Log Level: {server_config.log_level}")
 
-        # Create and run server
-        server = MCPAzureDevOpsServer(server_config)
-        asyncio.run(server.run())
+        if config:
+            logger.info(f"Using configuration file: {config}")
+
+        # Run the FastMCP server
+        run_server()
 
     except KeyboardInterrupt:
-        logger.info("Server stopped by user")
+        logging.getLogger(__name__).info("Server stopped by user")
         sys.exit(0)
     except Exception as e:
-        logger.error(f"Fatal error: {e}")
+        logging.getLogger(__name__).error(f"Fatal error: {e}", exc_info=True)
         sys.exit(1)
 
 

@@ -1,15 +1,17 @@
 # MCP Azure DevOps Server
 
-A Model Context Protocol (MCP) server for interacting with Azure DevOps, focusing on variable groups and service connections.
+A Model Context Protocol (MCP) server for interacting with Azure DevOps, built with FastMCP and focusing on variable groups and service connections.
 
 ## Features
 
 - **Variable Groups**: List and inspect variable groups in Azure DevOps projects
 - **Service Connections**: List and inspect service connections in Azure DevOps projects
+- **FastMCP Integration**: Built with FastMCP 1.11.0 for optimal performance and compatibility
 - **Secure Authentication**: Support for Personal Access Tokens and Azure AD
 - **Type Safety**: Full type hints and Pydantic models
-- **Async Support**: Efficient async/await implementation
+- **Async Support**: Efficient async/await implementation throughout
 - **Structured Logging**: Comprehensive logging with correlation IDs
+- **VS Code Integration**: Complete setup guide for VS Code/GitHub Copilot
 
 ## Architecture
 

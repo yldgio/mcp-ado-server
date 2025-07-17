@@ -58,10 +58,27 @@ class AzureDevOpsClient:
         )
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
-        """Async context manager exit."""
+    async def close(self) -> None:
+        """Close the HTTP client."""
         if self._client:
             await self._client.aclose()
+            self._client = None
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Async context manager exit."""
+        await self.close()
+
+    async def _ensure_client_initialized(self) -> None:
+        """Ensure the HTTP client is initialized."""
+        if not self._client:
+            self._client = httpx.AsyncClient(
+                timeout=httpx.Timeout(self.config.request_timeout),
+                headers={
+                    "Authorization": self._auth_header,
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+            )
 
     async def _make_request(
         self,
@@ -71,8 +88,8 @@ class AzureDevOpsClient:
         json_data: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Make an HTTP request to Azure DevOps API."""
-        if not self._client:
-            raise RuntimeError("Client not initialized. Use async context manager.")
+        # Auto-initialize client if needed
+        await self._ensure_client_initialized()
 
         # Add API version to parameters
         if params is None:
@@ -82,6 +99,7 @@ class AzureDevOpsClient:
         logger.debug(f"Making {method} request to {url} with params: {params}")
 
         try:
+            assert self._client is not None  # Type guard after initialization
             response = await self._client.request(
                 method=method, url=url, params=params, json=json_data
             )
