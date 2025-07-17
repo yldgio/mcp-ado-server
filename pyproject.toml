@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcp-ado-server"
-version = "0.1.0"
-description = "MCP Server for Azure DevOps interactions"
+version = "2.0.0"
+description = "FastMCP Server for Azure DevOps interactions with variable groups and service connections"
 authors = [
     {name = "Your Name", email = "your.email@example.com"}
 ]
