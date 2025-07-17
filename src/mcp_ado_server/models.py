@@ -4,18 +4,20 @@ Data models for Azure DevOps resources.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 from enum import Enum
+from typing import Any, Dict, List, Optional
 
 
 class VariableGroupType(str, Enum):
     """Types of variable groups."""
+
     VSTS = "Vsts"
     AZURE_KEY_VAULT = "AzureKeyVault"
 
 
 class ServiceConnectionType(str, Enum):
     """Types of service connections."""
+
     AZURE_RM = "azurerm"
     GITHUB = "github"
     DOCKER_REGISTRY = "dockerregistry"
@@ -26,6 +28,7 @@ class ServiceConnectionType(str, Enum):
 @dataclass
 class User:
     """Represents a user in Azure DevOps."""
+
     id: str
     display_name: str
     unique_name: str
@@ -35,6 +38,7 @@ class User:
 @dataclass
 class VariableValue:
     """Represents a variable value in a variable group."""
+
     value: Optional[str]
     is_secret: bool
     is_readonly: bool = False
@@ -43,6 +47,7 @@ class VariableValue:
 @dataclass
 class VariableGroup:
     """Represents an Azure DevOps variable group."""
+
     id: int
     name: str
     description: Optional[str]
@@ -55,7 +60,7 @@ class VariableGroup:
     project_id: Optional[str] = None
     project_name: Optional[str] = None
     provider_data: Optional[Dict[str, Any]] = None
-    
+
     @classmethod
     def from_api_response(cls, data: Dict[str, Any]) -> "VariableGroup":
         """Create a VariableGroup from Azure DevOps API response."""
@@ -64,9 +69,9 @@ class VariableGroup:
             variables[key] = VariableValue(
                 value=var_data.get("value"),
                 is_secret=var_data.get("isSecret", False),
-                is_readonly=var_data.get("isReadonly", False)
+                is_readonly=var_data.get("isReadonly", False),
             )
-        
+
         return cls(
             id=data["id"],
             name=data["name"],
@@ -77,25 +82,26 @@ class VariableGroup:
                 id=data["createdBy"]["id"],
                 display_name=data["createdBy"]["displayName"],
                 unique_name=data["createdBy"]["uniqueName"],
-                image_url=data["createdBy"].get("imageUrl")
+                image_url=data["createdBy"].get("imageUrl"),
             ),
             created_on=datetime.fromisoformat(data["createdOn"].replace("Z", "+00:00")),
             modified_by=User(
                 id=data["modifiedBy"]["id"],
                 display_name=data["modifiedBy"]["displayName"],
                 unique_name=data["modifiedBy"]["uniqueName"],
-                image_url=data["modifiedBy"].get("imageUrl")
+                image_url=data["modifiedBy"].get("imageUrl"),
             ),
             modified_on=datetime.fromisoformat(data["modifiedOn"].replace("Z", "+00:00")),
             project_id=data.get("projectId"),
             project_name=data.get("projectName"),
-            provider_data=data.get("providerData")
+            provider_data=data.get("providerData"),
         )
 
 
 @dataclass
 class ServiceEndpointAuthorization:
     """Represents authorization for a service endpoint."""
+
     scheme: str
     parameters: Dict[str, str] = field(default_factory=dict)
 
@@ -103,6 +109,7 @@ class ServiceEndpointAuthorization:
 @dataclass
 class ServiceConnection:
     """Represents an Azure DevOps service connection."""
+
     id: str
     name: str
     type: ServiceConnectionType
@@ -116,25 +123,24 @@ class ServiceConnection:
     created_by: Optional[User] = None
     project_id: Optional[str] = None
     project_name: Optional[str] = None
-    
+
     @classmethod
     def from_api_response(cls, data: Dict[str, Any]) -> "ServiceConnection":
         """Create a ServiceConnection from Azure DevOps API response."""
         auth_data = data.get("authorization", {})
         authorization = ServiceEndpointAuthorization(
-            scheme=auth_data.get("scheme", ""),
-            parameters=auth_data.get("parameters", {})
+            scheme=auth_data.get("scheme", ""), parameters=auth_data.get("parameters", {})
         )
-        
+
         created_by = None
         if "createdBy" in data:
             created_by = User(
                 id=data["createdBy"]["id"],
                 display_name=data["createdBy"]["displayName"],
                 unique_name=data["createdBy"]["uniqueName"],
-                image_url=data["createdBy"].get("imageUrl")
+                image_url=data["createdBy"].get("imageUrl"),
             )
-        
+
         return cls(
             id=data["id"],
             name=data["name"],
@@ -147,14 +153,19 @@ class ServiceConnection:
             is_ready=data.get("isReady", False),
             owner=data.get("owner", ""),
             created_by=created_by,
-            project_id=data.get("serviceEndpointProjectReferences", [{}])[0].get("projectReference", {}).get("id"),
-            project_name=data.get("serviceEndpointProjectReferences", [{}])[0].get("projectReference", {}).get("name")
+            project_id=data.get("serviceEndpointProjectReferences", [{}])[0]
+            .get("projectReference", {})
+            .get("id"),
+            project_name=data.get("serviceEndpointProjectReferences", [{}])[0]
+            .get("projectReference", {})
+            .get("name"),
         )
 
 
 @dataclass
 class Project:
     """Represents an Azure DevOps project."""
+
     id: str
     name: str
     description: Optional[str]
@@ -162,7 +173,7 @@ class Project:
     state: str
     visibility: str
     last_update_time: datetime
-    
+
     @classmethod
     def from_api_response(cls, data: Dict[str, Any]) -> "Project":
         """Create a Project from Azure DevOps API response."""
@@ -173,16 +184,17 @@ class Project:
             url=data["url"],
             state=data["state"],
             visibility=data["visibility"],
-            last_update_time=datetime.fromisoformat(data["lastUpdateTime"].replace("Z", "+00:00"))
+            last_update_time=datetime.fromisoformat(data["lastUpdateTime"].replace("Z", "+00:00")),
         )
 
 
 @dataclass
 class MCPToolResult:
     """Represents the result of an MCP tool execution."""
+
     content: List[Dict[str, Any]]
     is_error: bool = False
-    
+
     @classmethod
     def success(cls, data: Any, message: Optional[str] = None) -> "MCPToolResult":
         """Create a successful result."""
@@ -190,7 +202,7 @@ class MCPToolResult:
         if message:
             content.insert(0, {"type": "text", "text": message})
         return cls(content=content, is_error=False)
-    
+
     @classmethod
     def error(cls, message: str, details: Optional[str] = None) -> "MCPToolResult":
         """Create an error result."""

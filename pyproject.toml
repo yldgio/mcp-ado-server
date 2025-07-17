@@ -33,13 +33,29 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
+    # Testing framework
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
     "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+
+    # Code formatting and linting
     "black>=23.0.0",
     "isort>=5.0.0",
+    "flake8>=6.0.0",
     "mypy>=1.0.0",
+
+    # Security and quality
+    "bandit>=1.7.0",
+    "safety>=2.0.0",
+
+    # Development tools
     "pre-commit>=3.0.0",
+    "tox>=4.0.0",
+
+    # Documentation
+    "mkdocs>=1.4.0",
+    "mkdocs-material>=9.0.0",
 ]
 
 [project.scripts]
@@ -118,4 +134,22 @@ exclude_lines = [
     "raise NotImplementedError",
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
+]
+
+[tool.bandit]
+# Security linting configuration
+exclude_dirs = ["tests", "test_*"]
+skips = ["B101"]  # Skip assert_used test
+severity = "medium"
+
+[tool.bandit.assert_used]
+skips = ["*_test.py", "test_*.py"]
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503"]
+max-complexity = 10
+per-file-ignores = [
+    "__init__.py:F401",
+    "tests/*:S101",
 ]

@@ -9,7 +9,7 @@ The MCP Azure DevOps Server provides a set of tools for interacting with Azure D
 The server uses Azure DevOps Personal Access Tokens (PAT) for authentication. You need to create a PAT with the following scopes:
 
 - **Variable Groups (read)**: Required for variable group operations
-- **Service Connections (read)**: Required for service connection operations  
+- **Service Connections (read)**: Required for service connection operations
 - **Project and Team (read)**: Required for project validation
 
 ## Available Tools
@@ -19,6 +19,7 @@ The server uses Azure DevOps Personal Access Tokens (PAT) for authentication. Yo
 List all variable groups in an Azure DevOps project.
 
 **Input Schema:**
+
 ```json
 {
   "type": "object",
@@ -37,6 +38,7 @@ List all variable groups in an Azure DevOps project.
 ```
 
 **Example Request:**
+
 ```json
 {
   "project": "MyProject",
@@ -45,6 +47,7 @@ List all variable groups in an Azure DevOps project.
 ```
 
 **Example Response:**
+
 ```json
 {
   "content": [
@@ -65,6 +68,7 @@ List all variable groups in an Azure DevOps project.
 Get detailed information about a specific variable group.
 
 **Input Schema:**
+
 ```json
 {
   "type": "object",
@@ -83,6 +87,7 @@ Get detailed information about a specific variable group.
 ```
 
 **Example Request:**
+
 ```json
 {
   "project": "MyProject",
@@ -91,6 +96,7 @@ Get detailed information about a specific variable group.
 ```
 
 **Example Response:**
+
 ```json
 {
   "content": [
@@ -111,6 +117,7 @@ Get detailed information about a specific variable group.
 List all service connections in an Azure DevOps project.
 
 **Input Schema:**
+
 ```json
 {
   "type": "object",
@@ -134,6 +141,7 @@ List all service connections in an Azure DevOps project.
 ```
 
 **Example Request:**
+
 ```json
 {
   "project": "MyProject",
@@ -143,6 +151,7 @@ List all service connections in an Azure DevOps project.
 ```
 
 **Example Response:**
+
 ```json
 {
   "content": [
@@ -163,6 +172,7 @@ List all service connections in an Azure DevOps project.
 Get detailed information about a specific service connection.
 
 **Input Schema:**
+
 ```json
 {
   "type": "object",
@@ -181,6 +191,7 @@ Get detailed information about a specific service connection.
 ```
 
 **Example Request:**
+
 ```json
 {
   "project": "MyProject",
@@ -189,6 +200,7 @@ Get detailed information about a specific service connection.
 ```
 
 **Example Response:**
+
 ```json
 {
   "content": [

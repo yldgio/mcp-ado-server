@@ -9,13 +9,13 @@ __version__ = "0.1.0"
 __author__ = "Your Name"
 __email__ = "your.email@example.com"
 
-from .server import MCPAzureDevOpsServer
 from .config import Config
-from .models import VariableGroup, ServiceConnection
+from .models import ServiceConnection, VariableGroup
+from .server import MCPAzureDevOpsServer
 
 __all__ = [
     "MCPAzureDevOpsServer",
-    "Config", 
+    "Config",
     "VariableGroup",
     "ServiceConnection",
 ]

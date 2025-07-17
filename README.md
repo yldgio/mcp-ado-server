@@ -170,7 +170,7 @@ pre-commit run --all-files
 ### Required Scopes
 
 - `Variable Groups (read)`: For variable group operations
-- `Service Connections (read)`: For service connection operations  
+- `Service Connections (read)`: For service connection operations
 - `Project and Team (read)`: For project validation
 
 ### Security Best Practices
@@ -201,6 +201,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 For issues and questions:
+
 - Open an issue on GitHub
 - Check the [troubleshooting guide](docs/TROUBLESHOOTING.md)
 - Review the [FAQ](docs/FAQ.md)

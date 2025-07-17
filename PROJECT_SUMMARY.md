@@ -7,6 +7,7 @@ Following your instructions as a senior software architect, I've built a compreh
 ## 📋 What We've Built
 
 ### 1. **System Requirements & Constraints** ✅
+
 - **MCP Protocol compliance** with proper tool definitions
 - **Azure DevOps REST API integration** for variable groups and service connections
 - **Python implementation** with modern tooling (uv, type hints, async/await)
@@ -14,6 +15,7 @@ Following your instructions as a senior software architect, I've built a compreh
 - **Comprehensive error handling** and structured logging
 
 ### 2. **Core Architectural Decisions** ✅
+
 - **Layered architecture** with dependency injection
 - **Async/await throughout** for optimal I/O performance
 - **Service-oriented design** with clear separation of concerns
@@ -21,6 +23,7 @@ Following your instructions as a senior software architect, I've built a compreh
 - **Extensible plugin architecture** for future Azure DevOps resources
 
 ### 3. **Data Models & Relationships** ✅
+
 - **Domain-driven design** with proper entity relationships
 - **Hierarchical support** (Organization → Project → Resources)
 - **Security-first approach** with automatic secret hiding
@@ -28,6 +31,7 @@ Following your instructions as a senior software architect, I've built a compreh
 - **Extensible enum types** for different resource types
 
 ### 4. **API Contract Design** ✅
+
 - **Four core MCP tools** implemented:
   - `list_variable_groups` - List all variable groups in a project
   - `get_variable_group_details` - Get detailed variable group information
@@ -38,6 +42,7 @@ Following your instructions as a senior software architect, I've built a compreh
 - **Optional filtering** parameters for refined queries
 
 ### 5. **Security Considerations** ✅
+
 - **Multi-layered security** with input validation and output sanitization
 - **Token management** with secure environment variable storage
 - **Scope validation** for minimal required permissions
@@ -75,6 +80,7 @@ mcp-ado/
 ## 🚀 Key Features
 
 ### **MCP Tools Implemented**
+
 1. **Variable Groups**
    - List all variable groups with filtering
    - Get detailed information including variables
@@ -88,6 +94,7 @@ mcp-ado/
    - Shared connection support
 
 ### **Technical Highlights**
+
 - **Type Safety**: Full type hints with Pydantic validation
 - **Async Performance**: Efficient async/await implementation
 - **Error Handling**: Comprehensive error handling with retry logic
@@ -123,6 +130,7 @@ mcp-ado/
 ## 🛠️ How to Use
 
 ### **Quick Start**
+
 ```bash
 # 1. Setup development environment
 python setup_dev.py
@@ -139,6 +147,7 @@ pytest
 ```
 
 ### **Environment Configuration**
+
 ```env
 AZURE_DEVOPS_ORGANIZATION=your-org-name
 AZURE_DEVOPS_PAT=your-personal-access-token
@@ -146,6 +155,7 @@ LOG_LEVEL=INFO
 ```
 
 ### **Required Azure DevOps Permissions**
+
 - Variable Groups (read)
 - Service Connections (read)
 - Project and Team (read)
@@ -153,6 +163,7 @@ LOG_LEVEL=INFO
 ## 🔮 Future Enhancements
 
 ### **Immediate Next Steps**
+
 1. **Extended Resource Support**: Add pipelines, builds, releases, work items
 2. **Advanced Authentication**: Azure AD and Service Principal support
 3. **Caching Layer**: Redis-based caching for performance
@@ -160,6 +171,7 @@ LOG_LEVEL=INFO
 5. **Configuration Files**: YAML/TOML configuration support
 
 ### **Long-term Vision**
+
 1. **Full Azure DevOps Integration**: Complete API coverage
 2. **Write Operations**: Create and update resources
 3. **Webhook Support**: Real-time notifications
@@ -178,30 +190,35 @@ LOG_LEVEL=INFO
 ## 🎯 Addressing Your Five Points
 
 ### **1. System Requirements & Constraints** ✅
+
 - Comprehensive MCP implementation with proper tool definitions
 - Azure DevOps REST API integration with error handling
 - Modern Python stack with uv, type hints, and async patterns
 - Security-first design with proper authentication
 
 ### **2. Core Architectural Decisions** ✅
+
 - Layered architecture with dependency injection
 - Async/await for optimal I/O performance
 - Service-oriented design for extensibility
 - Type-safe implementation with runtime validation
 
 ### **3. Data Models & Relationships** ✅
+
 - Domain-driven design with proper entity relationships
 - Hierarchical support with flat implementation
 - Security-aware models with secret protection
 - Audit trail support with user tracking
 
 ### **4. API Contract Design** ✅
+
 - Four well-defined MCP tools with JSON schemas
 - Consistent request/response patterns
 - Proper error handling and validation
 - Optional filtering for refined queries
 
 ### **5. Security Considerations** ✅
+
 - Multi-layered security with input/output validation
 - Secure token management with environment variables
 - Automatic secret hiding in responses
@@ -212,6 +229,7 @@ LOG_LEVEL=INFO
 This MCP Azure DevOps Server implementation provides a **production-ready foundation** that successfully addresses all your requirements while anticipating future needs. The architecture balances **simplicity for current scope** with **extensibility for future enhancements**.
 
 Key strengths:
+
 - **Robust**: Comprehensive error handling and validation
 - **Secure**: Multi-layered security with automatic secret protection
 - **Extensible**: Plugin-ready architecture for future Azure DevOps resources
