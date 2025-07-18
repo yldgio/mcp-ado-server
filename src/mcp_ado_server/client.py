@@ -205,7 +205,7 @@ class AzureDevOpsClient:
         """Get a specific service connection by ID."""
         # Use project-specific API URL for service connection details
         url = f"{self.config.project_api_url(project)}/serviceendpoint/endpoints/{connection_id}"
-
+        logger.info(f"Fetching service connection from URL: {url}")
         try:
             response = await self._make_request("GET", url)
             return ServiceConnection.from_api_response(response)
