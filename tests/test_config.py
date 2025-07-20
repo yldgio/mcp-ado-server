@@ -21,7 +21,7 @@ class TestConfig:
             config = Config.from_env()
             assert config.organization == "test-org"
             assert config.personal_access_token == "test-pat"
-            assert config.api_version == "7.0"
+            assert config.api_version == "7.1"
 
     def test_from_env_missing_organization(self):
         """Test error when organization is missing."""
