@@ -7,8 +7,10 @@ from typing import Any, Dict, List, Optional
 
 from .client import AzureDevOpsClient
 from .models import ServiceConnection, VariableGroup
+from .security import create_correlation_id, get_secure_logger
 
 logger = logging.getLogger(__name__)
+secure_logger = get_secure_logger(__name__)
 
 
 class VariableGroupService:
@@ -21,10 +23,16 @@ class VariableGroupService:
         self, project: str, group_name: Optional[str] = None
     ) -> Dict[str, Any]:
         """List variable groups in a project."""
+        correlation_id = create_correlation_id()
         try:
             # Validate project exists
             project_obj = await self.client.get_project(project)
             if not project_obj:
+                secure_logger.info_with_context(
+                    message="Project not found during variable groups listing",
+                    correlation_id=correlation_id,
+                    project=project
+                )
                 return {"success": False, "error": f"Project '{project}' not found", "data": []}
 
             # Get variable groups
@@ -63,14 +71,29 @@ class VariableGroupService:
             if group_name:
                 summary += f" with name '{group_name}'"
 
+            secure_logger.info_with_context(
+                message="Successfully retrieved variable groups",
+                correlation_id=correlation_id,
+                project=project,
+                group_count=len(results),
+                group_name=group_name
+            )
+
             return {"success": True, "data": results, "message": summary}
 
         except Exception as e:
-            logger.error(f"Error listing variable groups: {e}")
+            secure_logger.error_with_context(
+                message="Error listing variable groups",
+                error=e,
+                correlation_id=correlation_id,
+                project=project,
+                group_name=group_name
+            )
             return {"success": False, "error": str(e), "data": []}
 
     async def get_variable_group_details(self, project: str, group_id: int) -> Dict[str, Any]:
         """Get detailed information about a specific variable group."""
+        correlation_id = create_correlation_id()
         try:
             # Validate project exists
             project_obj = await self.client.get_project(project)
@@ -81,6 +104,16 @@ class VariableGroupService:
             vg = await self.client.get_variable_group(project=project_obj.id, group_id=group_id)
             if not vg:
                 return {"success": False, "error": f"Variable group with ID {group_id} not found"}
+
+            # Log security event for variable group access
+            secure_logger.security_event(
+                event_type="VARIABLE_GROUP_ACCESS",
+                description=f"Variable group details accessed: {vg.name}",
+                correlation_id=correlation_id,
+                project=project,
+                group_id=group_id,
+                group_name=vg.name
+            )
 
             # Format detailed result
             result = {
@@ -119,7 +152,13 @@ class VariableGroupService:
             }
 
         except Exception as e:
-            logger.error(f"Error getting variable group details: {e}")
+            secure_logger.error_with_context(
+                message="Error getting variable group details",
+                error=e,
+                correlation_id=correlation_id,
+                project=project,
+                group_id=group_id
+            )
             return {"success": False, "error": str(e)}
 
 
@@ -133,6 +172,7 @@ class ServiceConnectionService:
         self, project: str, connection_type: Optional[str] = None, include_shared: bool = True
     ) -> Dict[str, Any]:
         """List service connections in a project."""
+        correlation_id = create_correlation_id()
         try:
             # Validate project exists
             project_obj = await self.client.get_project(project)
@@ -179,16 +219,31 @@ class ServiceConnectionService:
             if connection_type:
                 summary += f" of type '{connection_type}'"
 
+            secure_logger.info_with_context(
+                message="Successfully retrieved service connections",
+                correlation_id=correlation_id,
+                project=project,
+                connection_count=len(results),
+                connection_type=connection_type
+            )
+
             return {"success": True, "data": results, "message": summary}
 
         except Exception as e:
-            logger.error(f"Error listing service connections: {e}")
+            secure_logger.error_with_context(
+                message="Error listing service connections",
+                error=e,
+                correlation_id=correlation_id,
+                project=project,
+                connection_type=connection_type
+            )
             return {"success": False, "error": str(e), "data": []}
 
     async def get_service_connection_details(
         self, project: str, connection_id: str
     ) -> Dict[str, Any]:
         """Get detailed information about a specific service connection."""
+        correlation_id = create_correlation_id()
         try:
             # Validate project exists
             project_obj = await self.client.get_project(project)
@@ -204,6 +259,17 @@ class ServiceConnectionService:
                     "success": False,
                     "error": f"Service connection with ID {connection_id} not found",
                 }
+
+            # Log security event for service connection access
+            secure_logger.security_event(
+                event_type="SERVICE_CONNECTION_ACCESS",
+                description=f"Service connection details accessed: {sc.name}",
+                correlation_id=correlation_id,
+                project=project,
+                connection_id=connection_id,
+                connection_name=sc.name,
+                connection_type=sc.type.value
+            )
 
             # Format detailed result
             result = {
@@ -250,5 +316,11 @@ class ServiceConnectionService:
             }
 
         except Exception as e:
-            logger.error(f"Error getting service connection details: {e}")
+            secure_logger.error_with_context(
+                message="Error getting service connection details",
+                error=e,
+                correlation_id=correlation_id,
+                project=project,
+                connection_id=connection_id
+            )
             return {"success": False, "error": str(e)}

@@ -13,8 +13,10 @@ import httpx
 
 from .config import Config
 from .models import Project, ServiceConnection, VariableGroup
+from .security import SecurityFilter, create_correlation_id, get_secure_logger
 
 logger = logging.getLogger(__name__)
+secure_logger = get_secure_logger(__name__)
 
 
 class AzureDevOpsAPIError(Exception):
@@ -88,6 +90,9 @@ class AzureDevOpsClient:
         json_data: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Make an HTTP request to Azure DevOps API."""
+        # Create correlation ID for request tracing
+        correlation_id = create_correlation_id()
+        
         # Auto-initialize client if needed
         await self._ensure_client_initialized()
 
@@ -96,12 +101,27 @@ class AzureDevOpsClient:
             params = {}
         params["api-version"] = self.config.api_version
 
-        logger.debug(f"Making {method} request to {url} with params: {params}")
+        # Log request with security filtering
+        secure_logger.debug_request(
+            method=method,
+            url=url,
+            params=params,
+            headers={"Authorization": "[REDACTED]", "Content-Type": "application/json"},
+            json_data=json_data,
+            correlation_id=correlation_id
+        )
 
         try:
             assert self._client is not None  # Type guard after initialization
             response = await self._client.request(
                 method=method, url=url, params=params, json=json_data
+            )
+
+            # Log response with security context
+            secure_logger.debug_response(
+                status_code=response.status_code,
+                response_size=len(response.content),
+                correlation_id=correlation_id
             )
 
             if response.status_code >= 400:
@@ -110,6 +130,26 @@ class AzureDevOpsClient:
                     error_data = response.json()
                 except json.JSONDecodeError:
                     pass
+
+                # Log security event for authentication failures
+                if response.status_code == 401:
+                    secure_logger.security_event(
+                        event_type="AUTHENTICATION_FAILURE",
+                        description="Azure DevOps API authentication failed",
+                        severity="WARNING",
+                        correlation_id=correlation_id,
+                        status_code=response.status_code,
+                        url=SecurityFilter.filter_url_params(url)
+                    )
+                elif response.status_code == 403:
+                    secure_logger.security_event(
+                        event_type="AUTHORIZATION_FAILURE",
+                        description="Azure DevOps API authorization failed",
+                        severity="WARNING",
+                        correlation_id=correlation_id,
+                        status_code=response.status_code,
+                        url=SecurityFilter.filter_url_params(url)
+                    )
 
                 raise AzureDevOpsAPIError(
                     f"API request failed with status {response.status_code}: {response.text}",
@@ -120,6 +160,13 @@ class AzureDevOpsClient:
             return response.json()
 
         except httpx.RequestError as e:
+            secure_logger.error_with_context(
+                message="HTTP request failed",
+                error=e,
+                correlation_id=correlation_id,
+                url=SecurityFilter.filter_url_params(url),
+                method=method
+            )
             raise AzureDevOpsAPIError(f"Request failed: {str(e)}")
 
     async def get_projects(self) -> List[Project]:
@@ -216,10 +263,20 @@ class AzureDevOpsClient:
 
     async def test_connection(self) -> bool:
         """Test the connection to Azure DevOps."""
+        correlation_id = create_correlation_id()
         try:
             projects = await self.get_projects()
-            logger.info(f"Successfully connected to Azure DevOps. Found {len(projects)} projects.")
+            secure_logger.info_with_context(
+                message=f"Successfully connected to Azure DevOps. Found {len(projects)} projects.",
+                correlation_id=correlation_id,
+                project_count=len(projects)
+            )
             return True
         except Exception as e:
-            logger.error(f"Failed to connect to Azure DevOps: {e}")
+            secure_logger.error_with_context(
+                message="Failed to connect to Azure DevOps",
+                error=e,
+                correlation_id=correlation_id,
+                organization=self.config.organization
+            )
             return False
