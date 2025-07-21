@@ -31,7 +31,7 @@ class VariableGroupService:
                 secure_logger.info_with_context(
                     message="Project not found during variable groups listing",
                     correlation_id=correlation_id,
-                    project=project
+                    project=project,
                 )
                 return {"success": False, "error": f"Project '{project}' not found", "data": []}
 
@@ -76,7 +76,7 @@ class VariableGroupService:
                 correlation_id=correlation_id,
                 project=project,
                 group_count=len(results),
-                group_name=group_name
+                group_name=group_name,
             )
 
             return {"success": True, "data": results, "message": summary}
@@ -87,7 +87,7 @@ class VariableGroupService:
                 error=e,
                 correlation_id=correlation_id,
                 project=project,
-                group_name=group_name
+                group_name=group_name,
             )
             return {"success": False, "error": str(e), "data": []}
 
@@ -112,7 +112,7 @@ class VariableGroupService:
                 correlation_id=correlation_id,
                 project=project,
                 group_id=group_id,
-                group_name=vg.name
+                group_name=vg.name,
             )
 
             # Format detailed result
@@ -157,7 +157,7 @@ class VariableGroupService:
                 error=e,
                 correlation_id=correlation_id,
                 project=project,
-                group_id=group_id
+                group_id=group_id,
             )
             return {"success": False, "error": str(e)}
 
@@ -224,7 +224,7 @@ class ServiceConnectionService:
                 correlation_id=correlation_id,
                 project=project,
                 connection_count=len(results),
-                connection_type=connection_type
+                connection_type=connection_type,
             )
 
             return {"success": True, "data": results, "message": summary}
@@ -235,7 +235,7 @@ class ServiceConnectionService:
                 error=e,
                 correlation_id=correlation_id,
                 project=project,
-                connection_type=connection_type
+                connection_type=connection_type,
             )
             return {"success": False, "error": str(e), "data": []}
 
@@ -268,7 +268,7 @@ class ServiceConnectionService:
                 project=project,
                 connection_id=connection_id,
                 connection_name=sc.name,
-                connection_type=sc.type.value
+                connection_type=sc.type.value,
             )
 
             # Format detailed result
@@ -321,6 +321,6 @@ class ServiceConnectionService:
                 error=e,
                 correlation_id=correlation_id,
                 project=project,
-                connection_id=connection_id
+                connection_id=connection_id,
             )
             return {"success": False, "error": str(e)}

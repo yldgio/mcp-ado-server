@@ -5,7 +5,8 @@ Configuration management for MCP Azure DevOps Server.
 import os
 from dataclasses import dataclass
 from typing import Optional
-from dotenv import load_dotenv # type: ignore
+
+from dotenv import load_dotenv  # type: ignore
 
 # Load environment variables from .env file
 load_dotenv()

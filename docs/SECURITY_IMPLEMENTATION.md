@@ -137,7 +137,7 @@ data = {
 
 # Filter with custom replacement
 filtered = SecurityFilter.filter_sensitive_dict(
-    data, 
+    data,
     replacement="***REDACTED***",
     deep_scan=True
 )

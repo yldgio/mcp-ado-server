@@ -3,11 +3,12 @@ Tests for security functionality.
 """
 
 import logging
+
 import pytest
 
 from mcp_ado_server.security import (
-    SecurityFilter,
     SecureLogger,
+    SecurityFilter,
     create_correlation_id,
     get_secure_logger,
 )
@@ -25,7 +26,7 @@ class TestSecurityFilter:
         assert SecurityFilter.is_sensitive_key("Azure_DevOps_PAT")
         assert SecurityFilter.is_sensitive_key("Authorization")
         assert SecurityFilter.is_sensitive_key("client_secret")
-        
+
         # Non-sensitive keys
         assert not SecurityFilter.is_sensitive_key("username")
         assert not SecurityFilter.is_sensitive_key("project_name")
@@ -36,9 +37,11 @@ class TestSecurityFilter:
     def test_is_sensitive_value(self):
         """Test sensitive value detection."""
         # Sensitive values (patterns that look like secrets)
-        assert SecurityFilter.is_sensitive_value("abcdef123456789012345678901234567890123456789012")  # 52 chars
+        assert SecurityFilter.is_sensitive_value(
+            "abcdef123456789012345678901234567890123456789012"
+        )  # 52 chars
         assert SecurityFilter.is_sensitive_value("12345678-1234-1234-1234-123456789012")  # GUID
-        
+
         # Non-sensitive values
         assert not SecurityFilter.is_sensitive_value("short")
         assert not SecurityFilter.is_sensitive_value("normal text value")
@@ -53,11 +56,11 @@ class TestSecurityFilter:
             "password": "secret123",
             "api_token": "abc123def456",
             "project_name": "MyProject",
-            "secret_key": "very-secret-value"
+            "secret_key": "very-secret-value",
         }
-        
+
         filtered = SecurityFilter.filter_sensitive_dict(data)
-        
+
         assert filtered["username"] == "john.doe"
         assert filtered["password"] == "[FILTERED]"
         assert filtered["api_token"] == "[FILTERED]"
@@ -70,18 +73,13 @@ class TestSecurityFilter:
             "config": {
                 "username": "john.doe",
                 "password": "secret123",
-                "nested": {
-                    "api_key": "abc123"
-                }
+                "nested": {"api_key": "abc123"},
             },
-            "metadata": {
-                "version": "1.0",
-                "secret": "hidden"
-            }
+            "metadata": {"version": "1.0", "secret": "hidden"},
         }
-        
+
         filtered = SecurityFilter.filter_sensitive_dict(data, deep_scan=True)
-        
+
         assert filtered["config"]["username"] == "john.doe"
         assert filtered["config"]["password"] == "[FILTERED]"
         assert filtered["config"]["nested"]["api_key"] == "[FILTERED]"
@@ -92,7 +90,7 @@ class TestSecurityFilter:
         """Test custom replacement string."""
         data = {"password": "secret123", "username": "john"}
         filtered = SecurityFilter.filter_sensitive_dict(data, replacement="***HIDDEN***")
-        
+
         assert filtered["password"] == "***HIDDEN***"
         assert filtered["username"] == "john"
 
@@ -101,13 +99,13 @@ class TestSecurityFilter:
         data = {
             "items": [
                 {"name": "item1", "secret": "secret1"},
-                {"name": "item2", "api_key": "key123"}
+                {"name": "item2", "api_key": "key123"},
             ],
-            "metadata": {"version": "1.0"}
+            "metadata": {"version": "1.0"},
         }
-        
+
         filtered = SecurityFilter.filter_sensitive_dict(data, deep_scan=True)
-        
+
         assert filtered["items"][0]["name"] == "item1"
         assert filtered["items"][0]["secret"] == "[FILTERED]"
         assert filtered["items"][1]["name"] == "item2"
@@ -121,11 +119,11 @@ class TestSecurityFilter:
         filtered = SecurityFilter.filter_url_params(url)
         expected = "https://api.example.com/data?username=john&api_key=[FILTERED]&project=test"
         assert filtered == expected
-        
+
         # URL without parameters
         simple_url = "https://api.example.com/data"
         assert SecurityFilter.filter_url_params(simple_url) == simple_url
-        
+
         # URL with no sensitive parameters
         safe_url = "https://api.example.com/data?username=john&project=test"
         assert SecurityFilter.filter_url_params(safe_url) == safe_url
@@ -135,15 +133,15 @@ class TestSecurityFilter:
         params = {"project": "test", "api_key": "secret123"}
         headers = {"Authorization": "Bearer token123", "Content-Type": "application/json"}
         json_data = {"username": "john", "password": "secret"}
-        
+
         sanitized = SecurityFilter.sanitize_for_logging(
             method="POST",
             url="https://api.example.com/data?token=abc123",
             params=params,
             headers=headers,
-            json_data=json_data
+            json_data=json_data,
         )
-        
+
         assert sanitized["method"] == "POST"
         assert sanitized["url"] == "https://api.example.com/data?token=[FILTERED]"
         assert sanitized["params"]["project"] == "test"
@@ -175,7 +173,7 @@ class TestSecureLogger:
         correlation_id = create_correlation_id()
         assert isinstance(correlation_id, str)
         assert len(correlation_id) == 8
-        
+
         # Ensure different calls return different IDs
         another_id = create_correlation_id()
         assert correlation_id != another_id
@@ -189,15 +187,15 @@ class TestSecureLoggerIntegration:
         logger = logging.getLogger("test_debug")
         logger.setLevel(logging.DEBUG)
         secure_logger = SecureLogger(logger)
-        
+
         with caplog.at_level(logging.DEBUG):
             secure_logger.debug_request(
                 method="POST",
                 url="https://api.example.com/test?api_key=secret123",
                 params={"project": "test", "token": "secret"},
-                correlation_id="test123"
+                correlation_id="test123",
             )
-        
+
         log_message = caplog.records[0].message
         assert "[test123]" in log_message
         assert "HTTP Request:" in log_message
@@ -210,16 +208,16 @@ class TestSecureLoggerIntegration:
         logger = logging.getLogger("test_security")
         logger.setLevel(logging.INFO)
         secure_logger = SecureLogger(logger)
-        
+
         with caplog.at_level(logging.INFO):
             secure_logger.security_event(
                 event_type="AUTHENTICATION_FAILURE",
                 description="Invalid credentials",
                 correlation_id="sec123",
                 username="john",
-                password="secret123"
+                password="secret123",
             )
-        
+
         log_message = caplog.records[0].message
         assert "[sec123]" in log_message
         assert "SECURITY_EVENT: AUTHENTICATION_FAILURE" in log_message
@@ -231,18 +229,18 @@ class TestSecureLoggerIntegration:
         logger = logging.getLogger("test_error")
         logger.setLevel(logging.ERROR)
         secure_logger = SecureLogger(logger)
-        
+
         test_error = ValueError("Test error")
-        
+
         with caplog.at_level(logging.ERROR):
             secure_logger.error_with_context(
                 message="Operation failed",
                 error=test_error,
                 correlation_id="err123",
                 api_key="secret123",
-                project="test_project"
+                project="test_project",
             )
-        
+
         log_message = caplog.records[0].message
         assert "[err123]" in log_message
         assert "Error: Operation failed" in log_message
@@ -258,7 +256,7 @@ class TestEdgeCases:
         """Test handling of None values."""
         data = {"key1": None, "password": None, "key3": "value"}
         filtered = SecurityFilter.filter_sensitive_dict(data)
-        
+
         assert filtered["key1"] is None
         assert filtered["password"] == "[FILTERED]"  # Still filtered even if None
         assert filtered["key3"] == "value"
@@ -279,7 +277,7 @@ class TestEdgeCases:
         url1 = "https://example.com?api_key="
         filtered1 = SecurityFilter.filter_url_params(url1)
         assert filtered1 == "https://example.com?api_key=[FILTERED]"
-        
+
         # URL with parameter but no equals sign
         url2 = "https://example.com?standalone_param"
         filtered2 = SecurityFilter.filter_url_params(url2)
@@ -287,13 +285,8 @@ class TestEdgeCases:
 
     def test_deep_scan_disabled(self):
         """Test filtering with deep scan disabled."""
-        data = {
-            "password": "secret1",
-            "nested": {
-                "api_key": "secret2"
-            }
-        }
-        
+        data = {"password": "secret1", "nested": {"api_key": "secret2"}}
+
         filtered = SecurityFilter.filter_sensitive_dict(data, deep_scan=False)
         assert filtered["password"] == "[FILTERED]"
         assert filtered["nested"]["api_key"] == "secret2"  # Should not be filtered

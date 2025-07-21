@@ -92,7 +92,7 @@ class AzureDevOpsClient:
         """Make an HTTP request to Azure DevOps API."""
         # Create correlation ID for request tracing
         correlation_id = create_correlation_id()
-        
+
         # Auto-initialize client if needed
         await self._ensure_client_initialized()
 
@@ -108,7 +108,7 @@ class AzureDevOpsClient:
             params=params,
             headers={"Authorization": "[REDACTED]", "Content-Type": "application/json"},
             json_data=json_data,
-            correlation_id=correlation_id
+            correlation_id=correlation_id,
         )
 
         try:
@@ -121,7 +121,7 @@ class AzureDevOpsClient:
             secure_logger.debug_response(
                 status_code=response.status_code,
                 response_size=len(response.content),
-                correlation_id=correlation_id
+                correlation_id=correlation_id,
             )
 
             if response.status_code >= 400:
@@ -139,7 +139,7 @@ class AzureDevOpsClient:
                         severity="WARNING",
                         correlation_id=correlation_id,
                         status_code=response.status_code,
-                        url=SecurityFilter.filter_url_params(url)
+                        url=SecurityFilter.filter_url_params(url),
                     )
                 elif response.status_code == 403:
                     secure_logger.security_event(
@@ -148,7 +148,7 @@ class AzureDevOpsClient:
                         severity="WARNING",
                         correlation_id=correlation_id,
                         status_code=response.status_code,
-                        url=SecurityFilter.filter_url_params(url)
+                        url=SecurityFilter.filter_url_params(url),
                     )
 
                 raise AzureDevOpsAPIError(
@@ -165,7 +165,7 @@ class AzureDevOpsClient:
                 error=e,
                 correlation_id=correlation_id,
                 url=SecurityFilter.filter_url_params(url),
-                method=method
+                method=method,
             )
             raise AzureDevOpsAPIError(f"Request failed: {str(e)}")
 
@@ -269,7 +269,7 @@ class AzureDevOpsClient:
             secure_logger.info_with_context(
                 message=f"Successfully connected to Azure DevOps. Found {len(projects)} projects.",
                 correlation_id=correlation_id,
-                project_count=len(projects)
+                project_count=len(projects),
             )
             return True
         except Exception as e:
@@ -277,6 +277,6 @@ class AzureDevOpsClient:
                 message="Failed to connect to Azure DevOps",
                 error=e,
                 correlation_id=correlation_id,
-                organization=self.config.organization
+                organization=self.config.organization,
             )
             return False
