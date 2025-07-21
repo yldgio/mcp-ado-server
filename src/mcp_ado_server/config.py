@@ -19,7 +19,7 @@ class Config:
     # Azure DevOps Configuration
     organization: str
     personal_access_token: str
-    api_version: str = "7.0"
+    api_version: str = "7.1"
 
     # Server Configuration
     log_level: str = "INFO"
@@ -47,7 +47,7 @@ class Config:
         return cls(
             organization=organization,
             personal_access_token=pat,
-            api_version=os.getenv("API_VERSION", "7.0"),
+            api_version=os.getenv("API_VERSION", "7.1"),
             log_level=os.getenv("LOG_LEVEL", "INFO"),
             log_format=os.getenv("LOG_FORMAT", "json"),
             request_timeout=int(os.getenv("REQUEST_TIMEOUT", "30")),
