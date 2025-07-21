@@ -103,4 +103,4 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         path: ./
-        extra_args: --debug --only-verified --since-commit=HEAD~10
+        extra_args: --debug --only-verified
