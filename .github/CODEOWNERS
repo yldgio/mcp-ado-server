@@ -1,0 +1,20 @@
+# Global code owners - all files require review from yldgio
+* @yldgio
+
+# Core source code - requires detailed review
+/src/ @yldgio
+
+# Configuration files - critical for security
+/.github/ @yldgio
+/pyproject.toml @yldgio
+/.pre-commit-config.yaml @yldgio
+
+# Documentation - can be more flexible
+/docs/ @yldgio
+/README.md @yldgio
+
+# Tests - ensure quality
+/tests/ @yldgio
+
+# Security and dependency files - high priority
+/scripts/security_scan.py @yldgio

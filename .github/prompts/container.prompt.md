@@ -17,4 +17,3 @@ Act as a senior software architect.
 Keep configuration minimal and focused on FastMCP development workflow.
 Use Microsoft dev container base images for compatibility.
 Include only essential tools for Python MCP server development.
-

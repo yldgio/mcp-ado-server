@@ -4,10 +4,10 @@ When generating code, follow these instructions carefully. I am GitHub Copilot.
 
 ## Project Context
 
-**Project:** MCP Azure DevOps Server  
-**Purpose:** Model Context Protocol server for Azure DevOps variable groups and service connections  
-**Tech Stack:** FastMCP 1.11.0, Python 3.10+, httpx, Pydantic, pytest  
-**Package Manager:** uv  
+**Project:** MCP Azure DevOps Server
+**Purpose:** Model Context Protocol server for Azure DevOps variable groups and service connections
+**Tech Stack:** FastMCP 1.11.0, Python 3.10+, httpx, Pydantic, pytest
+**Package Manager:** uv
 **Deployment:** VS Code MCP integration ready
 
 ## Code Generation Guidelines
