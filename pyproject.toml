@@ -158,6 +158,7 @@ per-file-ignores = [
 
 [dependency-groups]
 dev = [
+    "mypy>=1.17.0",
     "pre-commit>=4.2.0",
     "pytest>=8.4.1",
     "pytest-asyncio>=1.1.0",
