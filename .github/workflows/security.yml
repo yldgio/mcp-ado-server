@@ -45,6 +45,11 @@ jobs:
     name: Dependency Vulnerability Scan
     runs-on: ubuntu-latest
 
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
     steps:
     - uses: actions/checkout@v4
 
@@ -61,6 +66,7 @@ jobs:
 
     - name: Run pip-audit
       run: |
+        uv add pip-audit --dev
         uv run pip-audit --format=json --output=pip-audit-report.json
       continue-on-error: true
 
@@ -97,6 +103,4 @@ jobs:
       uses: trufflesecurity/trufflehog@main
       with:
         path: ./
-        base: main
-        head: HEAD
-        extra_args: --debug --only-verified
+        extra_args: --debug --only-verified --since-commit=HEAD~10
